@@ -1,0 +1,23 @@
+/* App-level styles */
+
+.app {
+  min-height: 100vh;
+}
+
+/* Give main content a right margin so the sidebar doesn't overlap */
+@media (min-width: 769px) {
+  main {
+    padding-right: 72px;
+  }
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 2.4rem 0;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}

@@ -1,0 +1,182 @@
+/* ─── Google Fonts ──────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:            #0a0505;
+  --bg-secondary:  #0f0707;
+  --surface:       #160c0c;
+  --surface2:      #1e0f0f;
+
+  /* Crimson scale */
+  --crimson:       #8b1e1e;
+  --crimson-light: #c74d4d;
+  --crimson-dark:  #511010;
+  --crimson-raw:   153, 0, 0;          /* used inside rgba() helpers */
+
+  /* Accent */
+  --gold:          #c8943a;
+
+  /* Text */
+  --text:          #f0e8e8;
+  --text-muted:    #7a5f5f;
+
+  /* Borders */
+  --border:        rgba(153, 0, 0, 0.18);
+  --border-glow:   rgba(153, 0, 0, 0.45);
+
+  /* Shape */
+  --radius:        12px;
+  --radius-sm:     8px;
+  --radius-pill:   100px;
+
+  /* Typography */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Legacy aliases kept so other components don't break */
+  --bg-color:         var(--bg);
+  --text-primary:     var(--text);
+  --text-secondary:   var(--text-muted);
+  --accent-primary:   var(--crimson-light);
+  --accent-secondary: var(--gold);
+  --accent-glow:      rgba(153, 0, 0, 0.30);
+  --glass-bg:         rgba(22, 12, 12, 0.60);
+  --glass-border:     var(--border);
+  --glass-shadow:     0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 15px;
+}
+
+body {
+  font-family: var(--font-display);
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 6px; }
+::-webkit-scrollbar-track    { background: var(--bg); }
+::-webkit-scrollbar-thumb    { background: var(--crimson-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
+
+/* ─── Heading defaults ──────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Utilities ─────────────────────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, var(--crimson-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--crimson-light);
+}
+
+/* Glassmorphism */
+.glass {
+  background:           var(--glass-bg);
+  backdrop-filter:      blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border:               1px solid var(--border);
+  box-shadow:           var(--glass-shadow);
+  border-radius:        var(--radius);
+}
+
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 3.5rem;
+}
+
+.section {
+  padding: 100px 56px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background:   var(--crimson);
+  border-color: var(--crimson);
+  color:        var(--text);
+}
+.btn-primary:hover {
+  background:   #cc1111;
+  border-color: #cc1111;
+  transform:    translateY(-2px);
+  box-shadow:   0 0 28px rgba(var(--crimson-raw), 0.50);
+}
+
+.btn-outline {
+  background:   transparent;
+  border-color: var(--border);
+  color:        var(--text-muted);
+}
+.btn-outline:hover {
+  border-color: var(--crimson);
+  color:        var(--text);
+  transform:    translateY(-2px);
+}
+
+/* Tags / pills */
+.tag {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background:   rgba(var(--crimson-raw), 0.08);
+  border:       1px solid rgba(var(--crimson-raw), 0.20);
+  color:        rgba(204, 77, 77, 0.85);
+  font-family:  var(--font-mono);
+  font-size:    0.72rem;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 768px) {
+  .section { padding: 72px 20px; }
+  .container { padding: 0 1.25rem; }
+}
