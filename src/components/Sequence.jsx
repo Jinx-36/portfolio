@@ -139,7 +139,9 @@ export default function Sequence() {
     if (!loaded || !vid1Done) return;
     
     const unsubscribe = scrollYProgress.on('change', (p) => {
-      const idx = Math.min(Math.round(p * (TOTAL_FRAMES_2 - 1)), TOTAL_FRAMES_2 - 1);
+      // Map global scroll [0, 0.25] to video 2 frames [0, 72]
+      const v2p = Math.min(Math.max(p / 0.25, 0), 1);
+      const idx = Math.min(Math.round(v2p * (TOTAL_FRAMES_2 - 1)), TOTAL_FRAMES_2 - 1);
       if (idx === currentVid2Frame.current) return;
       currentVid2Frame.current = idx;
       
@@ -151,23 +153,33 @@ export default function Sequence() {
   }, [loaded, vid1Done, scrollYProgress]);
 
   /* Scroll-driven animations for Text Overlays */
-  // Hero text fades OUT early (0 to 15%)
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -40]);
-  const heroPointer = useTransform(scrollYProgress, v => v > 0.15 ? "none" : "auto");
+  // Hero text fades OUT early (0 to 10%)
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.10], [0, -40]);
+  const heroPointer = useTransform(scrollYProgress, v => v > 0.10 ? "none" : "auto");
   
-  // About text fades IN late (85% to 100%)
-  const aboutOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
-  const aboutY = useTransform(scrollYProgress, [0.85, 1], [40, 0]);
-  const aboutPointer = useTransform(scrollYProgress, v => v < 0.85 ? "none" : "auto");
+  // Card 1
+  const card1Opacity = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [0, 1, 1, 0]);
+  const card1Y = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [40, 0, 0, -40]);
+  const card1Pointer = useTransform(scrollYProgress, v => (v >= 0.2 && v <= 0.5) ? "auto" : "none");
+
+  // Card 2
+  const card2Opacity = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [0, 1, 1, 0]);
+  const card2Y = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [40, 0, 0, -40]);
+  const card2Pointer = useTransform(scrollYProgress, v => (v >= 0.45 && v <= 0.75) ? "auto" : "none");
+
+  // Card 3
+  const card3Opacity = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [0, 1, 1, 1]); 
+  const card3Y = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [40, 0, 0, 0]);
+  const card3Pointer = useTransform(scrollYProgress, v => v >= 0.7 ? "auto" : "none");
 
   // Watermarks
-  const watermarkRightOpacity = useTransform(scrollYProgress, [0, 0.4], [0.1, 0]); /* Fades out by 40% scroll */
-  const watermarkLeftOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 0.1]); /* Fades in at the end */
+  const watermarkRightOpacity = useTransform(scrollYProgress, [0, 0.2], [0.1, 0]); /* Fades out by 20% scroll */
+  const watermarkLeftOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 0.1]); /* Fades in at 25% */
 
   // Overlays
-  const heroOverlayOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const aboutOverlayOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]); /* Fades in at the end */
+  const heroOverlayOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
+  const aboutOverlayOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 1]); /* Fades in at 25% */
 
   return (
     <div ref={stickyRef} className="seq-wrapper">
@@ -241,33 +253,68 @@ export default function Sequence() {
         {/* ── ABOUT CONTENT (RIGHT SIDE) ── */}
         <AnimatePresence>
           {vid1Done && (
-            <motion.div 
-              className="seq-about"
-              style={{ opacity: aboutOpacity, y: aboutY, pointerEvents: aboutPointer }}
-            >
-              <p className="about-tag">02 — About Me</p>
-              <h2 className="about-title">
-                Crafting code<br />with <em>purpose</em>
-              </h2>
-              <p className="about-body">
-                I am <strong>Tiaray Olivier Randrianomanana</strong> — a developer driven by a
-                genuine passion for programming. For me, writing code is not just a job; it is a
-                craft I take pride in.
-              </p>
-              <p className="about-body">
-                I believe every project deserves <strong>exceptional quality</strong>, meticulous
-                attention to detail, and a foundation built to last.
-              </p>
-              <div className="about-tags">
-                {['React', 'TypeScript', 'Node.js', 'UI / UX', 'REST APIs'].map(s => (
-                  <span key={s} className="about-pill">{s}</span>
-                ))}
-              </div>
-              <a href="#projects" className="about-cta">
-                <span className="about-cta-line" />
-                See my work
-              </a>
-            </motion.div>
+            <>
+              {/* Card 1 */}
+              <motion.div 
+                className="seq-card"
+                style={{ opacity: card1Opacity, y: card1Y, pointerEvents: card1Pointer }}
+              >
+                <p className="card-tag">Skill 1 — Frontend</p>
+                <h2 className="card-title">
+                  Interfaces that <em>breathe</em>
+                </h2>
+                <p className="card-body">
+                  I craft pixel-precise UIs with <strong>React</strong> — component-driven, performant, and designed to feel alive. With a sharp eye for spacing, typography, and motion, I bridge the gap between what works and what wows.
+                </p>
+                <div className="card-tags">
+                  {['React', 'CSS', 'Animations', 'UX', 'Responsive Design'].map(s => (
+                    <span key={s} className="card-pill">{s}</span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Card 2 */}
+              <motion.div 
+                className="seq-card"
+                style={{ opacity: card2Opacity, y: card2Y, pointerEvents: card2Pointer }}
+              >
+                <p className="card-tag">Skill 2 — Backend</p>
+                <h2 className="card-title">
+                  Logic built to <em>last</em>
+                </h2>
+                <p className="card-body">
+                  From <strong>REST APIs</strong> to business logic, I engineer clean, scalable server-side solutions with <strong>Node.js</strong> — reliable under pressure, structured with intent, and easy to maintain.
+                </p>
+                <div className="card-tags">
+                  {['Node.js', 'Express', 'REST APIs', 'Authentication'].map(s => (
+                    <span key={s} className="card-pill">{s}</span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Card 3 */}
+              <motion.div 
+                className="seq-card"
+                style={{ opacity: card3Opacity, y: card3Y, pointerEvents: card3Pointer }}
+              >
+                <p className="card-tag">Skill 3 — Data & Full-Stack</p>
+                <h2 className="card-title">
+                  From idea to <em>reality</em>
+                </h2>
+                <p className="card-body">
+                  I design schemas that scale and write queries that perform — then connect every layer into one cohesive product. Frontend, backend, database: <strong>one vision, end to end</strong>.
+                </p>
+                <div className="card-tags">
+                  {['PostgreSQL', 'MySQL', 'Schema Design', 'Full-Stack'].map(s => (
+                    <span key={s} className="card-pill">{s}</span>
+                  ))}
+                </div>
+                <a href="#projects" className="card-cta">
+                  <span className="card-cta-line" />
+                  Discover my work
+                </a>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 

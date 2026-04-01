@@ -149,7 +149,7 @@
 }
 
 .sb__mono span {
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: var(--font-title);
   font-weight: 800;
   font-size: 0.95rem;
   color: #8b1e1e;
@@ -221,7 +221,7 @@
 }
 
 .sb__drawer-mono {
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: var(--font-title);
   font-weight: 800;
   font-size: 1.6rem;
   letter-spacing: -0.04em;

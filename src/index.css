@@ -1,6 +1,17 @@
 /* ─── Google Fonts ──────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;1,300&display=swap');
 
+/* ─── Custom Fonts ──────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Black Mango';
+  src: url('./assets/fonts/Black Mango/Web Fonts/1be24cb794e05db5c90a6b24da7ed1c2.woff2') format('woff2'),
+       url('./assets/fonts/Black Mango/Web Fonts/1be24cb794e05db5c90a6b24da7ed1c2.woff') format('woff'),
+       url('./assets/fonts/Black Mango/Web Fonts/1be24cb794e05db5c90a6b24da7ed1c2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── Design Tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Backgrounds */
@@ -32,6 +43,7 @@
   --radius-pill:   100px;
 
   /* Typography */
+  --font-title:   'Black Mango', 'Outfit', system-ui, sans-serif;
   --font-display: 'Outfit', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 
@@ -77,7 +89,7 @@ body {
 
 /* ─── Heading defaults ──────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
+  font-family: var(--font-title);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;

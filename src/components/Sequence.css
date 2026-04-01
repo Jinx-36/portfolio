@@ -4,8 +4,8 @@
 
 .seq-wrapper {
   position: relative;
-  /* 400vh gives a very generous scroll range for the 73 frames */
-  height: 400vh;
+  /* 600vh gives a very generous scroll range for the 73 frames */
+  height: 600vh;
   width: 100%;
 }
 
@@ -60,7 +60,7 @@
 }
 
 /* ── GLOBAL TYPOGRAPHY ALIASES FOR COMPONENT USE ── */
-.seq-hero, .seq-about {
+.seq-hero, .seq-card {
   position: absolute;
   top: 25vh; /* Moved higher to reduce upper empty space */
   z-index: 10;
@@ -86,7 +86,7 @@
 }
 
 .hero-name {
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: var(--font-title);
   font-size: clamp(2.6rem, 6vw, 5rem);
   font-weight: 800;
   line-height: 1.04;
@@ -139,13 +139,13 @@
 }
 
 /* ── ABOUT TEXT (Right-Aligned) ── */
-.seq-about {
+.seq-card {
   right: calc(7% + 60px); /* 60px sidebar clearance */
   max-width: 500px;
   gap: 1.4rem;
 }
 
-.about-tag {
+.card-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.68rem;
   font-weight: 400;
@@ -155,8 +155,8 @@
   margin: 0;
 }
 
-.about-title {
-  font-family: 'Outfit', system-ui, sans-serif;
+.card-title {
+  font-family: var(--font-title);
   font-size: clamp(2.2rem, 4.5vw, 3.8rem);
   font-weight: 800;
   line-height: 1.06;
@@ -165,12 +165,12 @@
   margin: 0;
 }
 
-.about-title em {
+.card-title em {
   font-style: normal;
   color: #8b1e1e;
 }
 
-.about-body {
+.card-body {
   font-family: 'Outfit', system-ui, sans-serif;
   font-size: clamp(0.87rem, 1.4vw, 0.98rem);
   line-height: 1.9;
@@ -178,18 +178,18 @@
   margin: 0;
 }
 
-.about-body strong {
+.card-body strong {
   color: rgba(240, 232, 232, 0.88);
   font-weight: 600;
 }
 
-.about-tags {
+.card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
 }
 
-.about-pill {
+.card-pill {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.64rem;
   letter-spacing: 0.08em;
@@ -201,7 +201,7 @@
 }
 
 /* ── SHARED CTA LINK ── */
-.hero-cta, .about-cta {
+.hero-cta, .card-cta {
   display: inline-flex;
   align-items: center;
   gap: 1rem;
@@ -216,12 +216,12 @@
   width: fit-content;
 }
 
-.hero-cta:hover, .about-cta:hover {
+.hero-cta:hover, .card-cta:hover {
   gap: 1.7rem;
   color: #c74d4d;
 }
 
-.hero-cta-line, .about-cta-line {
+.hero-cta-line, .card-cta-line {
   display: block;
   width: 44px;
   height: 1px;
@@ -230,7 +230,7 @@
   transition: width 0.35s ease, background 0.25s;
 }
 
-.hero-cta:hover .hero-cta-line, .about-cta:hover .about-cta-line {
+.hero-cta:hover .hero-cta-line, .card-cta:hover .card-cta-line {
   width: 68px;
   background: #c74d4d;
 }
@@ -245,7 +245,7 @@
 
 .seq-watermark {
   position: absolute;
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: var(--font-title);
   font-size: 5.5rem;
   font-weight: 900;
   color: rgba(255, 255, 255, 1); /* Opacity controlled by framer-motion */
@@ -303,7 +303,7 @@
     transform: none;
   }
   
-  .seq-about {
+  .seq-card {
     right: 5%;
     left: 5%;
     top: auto;

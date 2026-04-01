@@ -4,12 +4,6 @@
   min-height: 100vh;
 }
 
-/* Give main content a right margin so the sidebar doesn't overlap */
-@media (min-width: 769px) {
-  main {
-    padding-right: 72px;
-  }
-}
 
 /* Footer */
 .site-footer {

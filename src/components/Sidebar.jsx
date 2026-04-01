@@ -63,8 +63,8 @@ export default function Sidebar() {
         </div>
 
         {/* Bottom monogram */}
-        <div className="sb__mono">
-          <span>T</span>
+        <div className="sb__mono" style={{ overflow: 'hidden' }}>
+          <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </motion.aside>
 
@@ -111,9 +111,12 @@ export default function Sidebar() {
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
             >
               {/* Decorative header */}
-              <div className="sb__drawer-head">
-                <span className="sb__drawer-mono">T.O.R</span>
-                <span className="sb__drawer-sub">Portfolio</span>
+              <div className="sb__drawer-head" style={{ flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+                <img src="/logo.png" alt="Logo" style={{ width: '46px', height: '46px', objectFit: 'cover', borderRadius: '8px' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                  <span className="sb__drawer-mono">T.O.R</span>
+                  <span className="sb__drawer-sub">Portfolio</span>
+                </div>
               </div>
 
               {/* Links */}
