@@ -4,6 +4,7 @@ import './Sequence.css';
 
 const TOTAL_FRAMES_1 = 73;
 const TOTAL_FRAMES_2 = 73;
+const TOTAL_FRAMES_3 = 121;
 const FRAME_MS = 40;
 
 const frames1 = Array.from({ length: TOTAL_FRAMES_1 }, (_, i) => {
@@ -14,6 +15,11 @@ const frames1 = Array.from({ length: TOTAL_FRAMES_1 }, (_, i) => {
 const frames2 = Array.from({ length: TOTAL_FRAMES_2 }, (_, i) => {
   const n = String(i + 1).padStart(6, '0');
   return new URL(`../assets/vid2/${n}.png`, import.meta.url).href;
+});
+
+const frames3 = Array.from({ length: TOTAL_FRAMES_3 }, (_, i) => {
+  const n = String(i + 1).padStart(5, '0');
+  return new URL(`../assets/vid3/${n}.png`, import.meta.url).href;
 });
 
 function drawCover(canvas, img) {
@@ -32,6 +38,7 @@ export default function Sequence() {
   
   const images1 = useRef([]);
   const images2 = useRef([]);
+  const images3 = useRef([]);
   
   const [loaded, setLoaded] = useState(false);
   const [vid1Done, setVid1Done] = useState(false);
@@ -40,11 +47,46 @@ export default function Sequence() {
   const lastTs = useRef(null);
   const currentVid1Frame = useRef(0);
   const currentVid2Frame = useRef(0);
+  const currentVid3Frame = useRef(0);
+
+  /* Scroll handling */
+  const { scrollYProgress } = useScroll({
+    target: stickyRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Hero text fades OUT early (0 to 10%)
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.10], [0, -40]);
+  const heroPointer = useTransform(scrollYProgress, v => v > 0.10 ? "none" : "auto");
+  
+  // Card 1
+  const card1Opacity = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [0, 1, 1, 0]);
+  const card1Y = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [40, 0, 0, -40]);
+  const card1Pointer = useTransform(scrollYProgress, v => (v >= 0.2 && v <= 0.5) ? "auto" : "none");
+
+  // Card 2
+  const card2Opacity = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [0, 1, 1, 0]);
+  const card2Y = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [40, 0, 0, -40]);
+  const card2Pointer = useTransform(scrollYProgress, v => (v >= 0.45 && v <= 0.75) ? "auto" : "none");
+
+  // Card 3
+  const card3Opacity = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [0, 1, 1, 1]); 
+  const card3Y = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [40, 0, 0, 0]);
+  const card3Pointer = useTransform(scrollYProgress, v => v >= 0.7 ? "auto" : "none");
+
+  // Watermarks
+  const watermarkRightOpacity = useTransform(scrollYProgress, [0, 0.2], [0.1, 0]); /* Fades out by 20% scroll */
+  const watermarkLeftOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 0.1]); /* Fades in at 25% */
+
+  // Overlays
+  const heroOverlayOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
+  const aboutOverlayOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 1]); /* Fades in at 25% */
 
   /* Pre-load frames */
   useEffect(() => {
     let done = 0;
-    const total = TOTAL_FRAMES_1 + TOTAL_FRAMES_2;
+    const total = TOTAL_FRAMES_1 + TOTAL_FRAMES_2 + TOTAL_FRAMES_3;
     const checkDone = () => { if (++done === total) setLoaded(true); };
     
     images1.current = frames1.map(src => {
@@ -52,6 +94,10 @@ export default function Sequence() {
       img.onload = checkDone; img.onerror = checkDone; return img;
     });
     images2.current = frames2.map(src => {
+      const img = new Image(); img.src = src;
+      img.onload = checkDone; img.onerror = checkDone; return img;
+    });
+    images3.current = frames3.map(src => {
       const img = new Image(); img.src = src;
       img.onload = checkDone; img.onerror = checkDone; return img;
     });
@@ -72,14 +118,18 @@ export default function Sequence() {
     canvas.height = window.innerHeight;
     
     // Draw current active frame
+    const p = scrollYProgress.get();
     if (!vid1Done) {
       const img = images1.current[currentVid1Frame.current];
       if (img?.complete) drawCover(canvas, img);
-    } else {
+    } else if (p < 0.2) {
       const img = images2.current[currentVid2Frame.current];
       if (img?.complete) drawCover(canvas, img);
+    } else {
+      const img = images3.current[currentVid3Frame.current];
+      if (img?.complete) drawCover(canvas, img);
     }
-  }, [vid1Done]);
+  }, [vid1Done, scrollYProgress]);
 
   useEffect(() => {
     window.addEventListener('resize', resize);
@@ -127,59 +177,62 @@ export default function Sequence() {
       // Failsafe unlock
       document.body.style.overflow = "";
     };
-  }, [loaded, vid1Done, resize]);
-
-  /* Scroll handling for Vid2 */
-  const { scrollYProgress } = useScroll({
-    target: stickyRef,
-    offset: ['start start', 'end end'],
-  });
+  }, [loaded, vid1Done, resize, scrollYProgress]);
 
   useEffect(() => {
     if (!loaded || !vid1Done) return;
     
     const unsubscribe = scrollYProgress.on('change', (p) => {
-      // Map global scroll [0, 0.25] to video 2 frames [0, 72]
-      const v2p = Math.min(Math.max(p / 0.25, 0), 1);
-      const idx = Math.min(Math.round(v2p * (TOTAL_FRAMES_2 - 1)), TOTAL_FRAMES_2 - 1);
-      if (idx === currentVid2Frame.current) return;
-      currentVid2Frame.current = idx;
-      
-      const img = images2.current[idx];
-      if (img?.complete) drawCover(canvasRef.current, img);
+      if (p < 0.2) {
+        // Map global scroll [0, 0.2] to video 2 frames [0, 72]
+        const v2p = Math.min(Math.max(p / 0.2, 0), 1);
+        const idx = Math.min(Math.round(v2p * (TOTAL_FRAMES_2 - 1)), TOTAL_FRAMES_2 - 1);
+        if (idx !== currentVid2Frame.current) {
+          currentVid2Frame.current = idx;
+          const img = images2.current[idx];
+          if (img?.complete) drawCover(canvasRef.current, img);
+        }
+      } else {
+        // vid3 era
+        let v3p = 0;
+        const half3 = Math.floor(TOTAL_FRAMES_3 / 2); // 60
+        
+        if (p < 0.5) {
+          // Card 1 to Card 2 transition (p=0.2 to p=0.5)
+          // Map p [0.2, 0.5] to vid3 frames [0, 60]
+          v3p = (p - 0.2) / 0.3;
+          const idx = Math.min(Math.round(v3p * half3), half3);
+          if (idx !== currentVid3Frame.current) {
+            currentVid3Frame.current = idx;
+            const img = images3.current[idx];
+            if (img?.complete) drawCover(canvasRef.current, img);
+          }
+        } else if (p < 0.75) {
+          // Card 2 to Card 3 transition (p=0.5 to p=0.75)
+          // Map p [0.5, 0.75] to vid3 frames [60, 120]
+          v3p = (p - 0.5) / 0.25;
+          const idx = half3 + Math.min(Math.round(v3p * (TOTAL_FRAMES_3 - 1 - half3)), TOTAL_FRAMES_3 - 1 - half3);
+          if (idx !== currentVid3Frame.current) {
+            currentVid3Frame.current = idx;
+            const img = images3.current[idx];
+            if (img?.complete) drawCover(canvasRef.current, img);
+          }
+        } else {
+          // p >= 0.75, keep last frame
+          const idx = TOTAL_FRAMES_3 - 1;
+          if (idx !== currentVid3Frame.current) {
+            currentVid3Frame.current = idx;
+            const img = images3.current[idx];
+            if (img?.complete) drawCover(canvasRef.current, img);
+          }
+        }
+      }
     });
     
     return unsubscribe;
   }, [loaded, vid1Done, scrollYProgress]);
 
-  /* Scroll-driven animations for Text Overlays */
-  // Hero text fades OUT early (0 to 10%)
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.10], [0, -40]);
-  const heroPointer = useTransform(scrollYProgress, v => v > 0.10 ? "none" : "auto");
-  
-  // Card 1
-  const card1Opacity = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [0, 1, 1, 0]);
-  const card1Y = useTransform(scrollYProgress, [0.2, 0.25, 0.45, 0.5], [40, 0, 0, -40]);
-  const card1Pointer = useTransform(scrollYProgress, v => (v >= 0.2 && v <= 0.5) ? "auto" : "none");
-
-  // Card 2
-  const card2Opacity = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [0, 1, 1, 0]);
-  const card2Y = useTransform(scrollYProgress, [0.45, 0.5, 0.7, 0.75], [40, 0, 0, -40]);
-  const card2Pointer = useTransform(scrollYProgress, v => (v >= 0.45 && v <= 0.75) ? "auto" : "none");
-
-  // Card 3
-  const card3Opacity = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [0, 1, 1, 1]); 
-  const card3Y = useTransform(scrollYProgress, [0.7, 0.75, 1, 1], [40, 0, 0, 0]);
-  const card3Pointer = useTransform(scrollYProgress, v => v >= 0.7 ? "auto" : "none");
-
-  // Watermarks
-  const watermarkRightOpacity = useTransform(scrollYProgress, [0, 0.2], [0.1, 0]); /* Fades out by 20% scroll */
-  const watermarkLeftOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 0.1]); /* Fades in at 25% */
-
-  // Overlays
-  const heroOverlayOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
-  const aboutOverlayOpacity = useTransform(scrollYProgress, [0.2, 0.25], [0, 1]); /* Fades in at 25% */
+  /* Overlays */
 
   return (
     <div ref={stickyRef} className="seq-wrapper">
